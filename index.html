@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Extracting the Refusal Direction in LLMs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.0.4/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.0.4/dist/reveal.css">
+
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.0.4/dist/theme/serif.css" id="theme">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.0.4/plugin/math/katex.min.css">
+
+  <style>
+    :root {
+      --r-background-color: #f4f4f4;
+    }
+
+    .reveal h1,
+    .reveal h2,
+    .reveal h3,
+    .reveal h4 {
+      text-transform: none;
+      font-weight: 600;
+    }
+
+    .reveal p,
+    .reveal li {
+      font-size: 0.85em;
+      line-height: 1.4;
+    }
+
+    .left-align {
+      text-align: left;
+    }
+
+    .highlight {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    .reveal .code-block {
+      background: #f4f4f4;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+
+    .reveal table.refusal-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.65em;
+      border: 1px solid black;
+    }
+
+    .reveal table.refusal-table th,
+    .reveal table.refusal-table td {
+      border: 1px solid #444;
+      padding: 6px 8px;
+      vertical-align: top;
+    }
+
+    .reveal table.refusal-table th {
+      background: #efefef;
+      font-weight: 600;
+    }
+
+    .refusal-code {
+      font-family: monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .token-red {
+      color: #d32f2f;
+    }
+
+    .token-blue {
+      color: #1565c0;
+    }
+
+    .two-col {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .col {
+      flex: 1 1 0;
+    }
+
+    .col-60 {
+      flex: 0 0 58%;
+    }
+
+    .col-40 {
+      flex: 0 0 40%;
+    }
+
+    section .muted-text {
+        font-size: 0.5em;
+        color: #787878;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <section>
+        <h2>Extracting the Refusal Direction in LLMs</h2>
+        <h4>Navigating the Candidate Space</h4>
+        <br>
+        <p>
+          <strong>Peter Zhang</strong><br>
+          University of Chicago
+        </p>
+        <p><small>Based on Arditi et al.</small></p>
+      </section>
+
+      <section class="left-align">
+        <h3>The Linear Representation Hypothesis</h3>
+          <img class="slide-image" src="geometry_of_truth.png" alt="Marks & Tegmark (2023): Geometry of truth scatter plots" />
+          <small class="muted-text">Marks, S., &amp; Tegmark, M. (2023). The geometry of truth: Emergent linear structure in large language model representations of true/false datasets. arXiv:2310.06824.</small>
+          <p><strong>Research goal (Arditi et al.):</strong> Finding the linear direction of "refusal" or "safety guardrails".</p>
+      </section>
+
+      <section class="left-align">
+        <h3>Difference-in-Means & The Candidate Challenge</h3>
+        <div class="two-col">
+          <div class="col col-42">
+            <p><strong>Refusal direction:</strong><br> $r^{(l)}_i = \mu^{(l)}_{i_\texttt{harmful}} - \mu^{(l)}_{i_\texttt{harmless}}$</p>
+            <p><strong>The Challenge:</strong> A massive pool of <span class="highlight">$|I| \times L$</span> candidate directions. How do we find the single best one?</p>
+          </div>
+          <div class="col col-58">
+            <table class="refusal-table">
+              <thead>
+                <tr>
+                  <th>Models</th>
+                  <th>Instruction Tokens (<span class="highlight">$I$</span>)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Qwen Chat</td>
+                  <td class="refusal-code">&lt;|im_start|&gt;user\n<span class="token-blue">{x}</span><span class="token-red">&lt;|im_end|&gt;\n&lt;|im_start|&gt;assistant\n</span></td>
+                </tr>
+                <tr>
+                  <td>Llama-3 Instruct</td>
+                  <td class="refusal-code">&lt;|start_header_id|&gt;user&lt;|end_header_id|&gt;\n\n<span class="token-blue">{x}</span><span class="token-red">&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;\n\n</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="left-align">
+        <h3>Criteria 1 & 2: Bypass & Induce</h3>
+        <img class="slide-image" src="bypass_score_induce_score.png" alt="Bypass Score and Induce Score results" />
+        <small class="muted-text">Created with Nanobanana</small>
+      </section>
+
+      <section class="left-align">
+        <h3>Criterion 3: KL Score</h3>
+        <p><em>Capability Preservation</em></p>
+        <ul>
+          <li><strong>What it does:</strong> Compare outputs with and without ablation on harmless prompts using KL divergence.</li>
+          <li><strong>Why it matters:</strong> $\text{kl\_score}
+
+            < 0.1$ keeps the intervention <strong>surgical</strong> and preserves core capabilities.
+          </li>
+        </ul>
+      </section>
+
+      <section class="left-align">
+        <h3>Criterion 4: The Layer Constraint</h3>
+        <p><strong>Constraint:</strong> $l
+
+          < 0.8L$</p>
+            <ul>
+              <li><strong>What it does:</strong> Prevent selecting "unembedding" directions (e.g., "Sorry" or "I" directions).</li>
+              <li><strong>Why it matters:</strong> We want to capture the deep semantic feature of refusal, not specific vocabulary.</li>
+            </ul>
+      </section>
+
+      <section class="left-align">
+        <h3>Why the Fantastic Four</h3>
+        <p>Select the direction that minimizes <strong>bypass score</strong>, subject to:</p>
+        <ul>
+          <li>$\text{induce\_score} > 0$: Prevents breaking the model entirely.</li>
+          <li>$\text{kl\_score}
+
+            < 0.1$: Prevents breaking core language capabilities.</li>
+          <li>$l
+
+            < 0.8L$: Prevents targeting superficial token probabilities.</li>
+        </ul>
+      </section>
+
+      <section class="left-align">
+        <h3>Bypass & Induce Score Statistics</h3>
+        <img class="slide-image" style="max-height: 75vh;" src="stats.png" alt="Bypass and Induce Score statistics across tokens and layers" />
+        <p><small>Distribution of bypass and induce scores across token positions and layers.</small></p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.0.4/dist/reveal.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.0.4/plugin/math/math.js"></script>
+  <script>
+    Reveal.initialize({
+      controls: true,
+      progress: true,
+      center: true,
+      hash: true,
+      transition: 'slide', // Academic talks usually look best with fade or none
+      slideNumber: 'c/t', // Shows current/total slide number
+      plugins: [RevealMath.KaTeX]
+    });
+  </script>
+</body>
+
+</html>
