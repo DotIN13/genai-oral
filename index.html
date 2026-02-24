@@ -199,9 +199,10 @@
 
       <section class="left-align">
         <h3>Why the <span style="color: #1878b0;">Fantastic Four!</span></h3>
+        <p>Minimize <strong>bypass_score</strong> to optimize for jailbreak behaviors.</p>
+        <p><strong>Constraints:</strong></p>
         <ul>
-          <li>A minimized <strong>bypass_score</strong> ensure the direction is <strong>necessary</strong> for model refusal.</li>
-          <li>A positive <strong>induce_score</strong> ensure the direction is <strong>sufficient</strong> to induce refusal.</li>
+          <li>$\text{induce\_score} > 0$: Ensure the direction is <strong>sufficient</strong> to induce refusal.</li>
           <li>$\text{kl\_score}
 
             < 0.1$: Prevents breaking language capabilities.</li>
