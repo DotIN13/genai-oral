@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.0.4/dist/reveal.css">
 
   <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.0.4/dist/theme/serif.css" id="theme">
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.0.4/plugin/math/katex.min.css">
 
   <style>
     :root {
@@ -189,13 +188,13 @@
       </section>
 
       <section class="left-align">
-        <h3>Why the Fantastic Four</h3>
-        <p>Select the direction that minimizes <strong>bypass score</strong>, subject to:</p>
+        <h3>Why the <span style="color: #1878b0;">Fantastic Four!</span></h3>
         <ul>
-          <li>$\text{induce\_score} > 0$: Prevents breaking the model entirely.</li>
+          <li>A minimized <strong>bypass_score</strong> ensure the direction is <strong>necessary</strong> for model refusal.</li>
+          <li>A positive <strong>induce_score</strong> ensure the direction is <strong>sufficient</strong> to induce refusal.</li>
           <li>$\text{kl\_score}
 
-            < 0.1$: Prevents breaking core language capabilities.</li>
+            < 0.1$: Prevents breaking language capabilities.</li>
           <li>$l
 
             < 0.8L$: Prevents targeting superficial token probabilities.</li>
