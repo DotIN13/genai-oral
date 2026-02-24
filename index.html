@@ -159,9 +159,19 @@
       </section>
 
       <section class="left-align">
-        <h3>Criteria 1 & 2: Bypass & Induce</h3>
-        <img class="slide-image" src="bypass_score_induce_score.png" alt="Bypass Score and Induce Score results" />
-        <small class="muted-text">Created with Nanobanana</small>
+        <section class="left-align">
+            <h3>Criteria 1 & 2: Bypass & Induce</h3>
+            <img class="slide-image" src="bypass_score_induce_score.png" alt="Bypass Score and Induce Score results" />
+            <small class="muted-text">Created with Nanobanana</small>
+        </section>
+        <section class="left-align">
+            <h3>Technical Details</h3>
+            <p><strong>Activation Addition:</strong> Induce refusal by shifting harmless activations toward harmful activations.</p>
+            $$x^{(l)\prime} \leftarrow x^{(l)} + r^{(l)}$$
+            
+            <p><strong>Directional Ablation:</strong> Remove the refusal direction by erasing it from all representations.</p>
+            $$x^{\prime} \leftarrow x - \hat{r}\hat{r}^{\top}x$$
+        </section>
       </section>
 
       <section class="left-align">
@@ -205,6 +215,16 @@
         <h3>Bypass & Induce Score Statistics</h3>
         <img class="slide-image" style="max-height: 75vh;" src="stats.png" alt="Bypass and Induce Score statistics across tokens and layers" />
         <p><small>Distribution of bypass and induce scores across token positions and layers.</small></p>
+      </section>
+
+      <section class="left-align">
+        <h3>Alternative Methods for Selecting Steering Vectors</h3>
+        <p><strong>Head-wise comparison:</strong> Use logistic regression $r^2$ scores to identify steering directions at attention head level.</p>
+        <small class="muted-text">Kim, J., Evans, J., &amp; Schein, A. (2025). Linear representations of political perspective emerge in large language models. <em>arXiv:2503.02080</em>.</small>
+        
+        <p><strong>Direct optimization:</strong> Learn steering vectors through bi-directional preference optimization or RL.</p>
+        <small class="muted-text">e.g., Cao, Y., Zhang, T., Cao, B., Yin, Z., Lin, L., Ma, F., &amp; Chen, J. (2024). Personalized steering of large language models: Versatile steering vectors through bi-directional preference optimization. <em>Advances in Neural Information Processing Systems</em>, 37, 49519–49551.</small>
+        
       </section>
 
     </div>
